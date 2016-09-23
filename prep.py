@@ -28,7 +28,7 @@ def get_feature(x,patient_id):
     p.close()
     f_x = to_np_array(f_x)
     print f_x.shape
-    return f_xP
+    return f_x
 
 
 
