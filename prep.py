@@ -25,6 +25,7 @@ def replace_d(df,x):
 PATH = "/rap/jim-594-aa/pthodo/kaggle/data/"
 data_p = 'downsample_100/'
 idx_type = 'spec/val/'
+nb_workers = 8
 
 feature = ['spectrogram']
 sampling_freq = int(re.search(r'\d+', data_p).group())
