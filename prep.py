@@ -31,8 +31,8 @@ parameters[feature[0]] = {'windowing':'hamming','length':200,'overlap':60}
 
 directory_feature = PATH + 'cached_feature/' + 'spectrogram_100_basic'
 
-if not os.path.exists(directory):
-    os.makedirs(directory)
+if not os.path.exists(directory_feature):
+    os.makedirs(directory_feature)
 else:
     sys.exit("Data already prepared")
 
@@ -41,6 +41,7 @@ if not os.path.exists(PATH + 'Index/' + idx_type):
 
 
 for i in range(3):
+    print "Patient" + str(i)
     X_train = pd.read_pickle(PATH+data_p+'X_train_'+str(i+1)+'.pkl')
     X_test =pd.read_pickle(PATH+data_p+'X_test_'+str(i+1)+'.pkl')
 
