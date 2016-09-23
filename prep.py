@@ -35,7 +35,7 @@ def get_feature(x,patient_id):
 PATH = "/NOBACKUP/pthodo/kaggle/data/"
 data_p = 'downsample_100/'
 idx_type = 'spec/val/'
-nb_workers = 5
+nb_workers = 20
 
 feature = ['spectrogram']
 sampling_freq = int(re.search(r'\d+', data_p).group())
