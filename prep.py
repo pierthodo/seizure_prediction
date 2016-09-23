@@ -61,5 +61,5 @@ for i in range(3):
     for p in range(4):
     	idx = cross_val_idx(X_train,4,True)	
     	dire = PATH + 'Index/' + idx_type 
-    	np.save(dire+str(i)+'_'+str(p)+'npy',np.array(idx))
+    	np.save(dire+str(i)+'_'+str(p)+'.npy',np.array(idx))
     
