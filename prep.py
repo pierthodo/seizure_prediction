@@ -64,7 +64,7 @@ for i in range(3):
     x_f_t = get_feature(np.array(X_test['data']),i)
 
     X_train = replace_d(X_train,x_f)
-    X_test = replace(X_test,x_f_t)
+    X_test = replace_d(X_test,x_f_t)
     X_train.to_pickle(directory_feature + 'X_train_'+str(i+1)+'.pkl')
     X_test.to_pickle(directory_feature + 'X_test_'+str(i+1)+'.pkl')
 
