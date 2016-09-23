@@ -40,11 +40,12 @@ def cross_val_idx(df,cv,validation):
     return idx
 
 
-def get_feature(x,patient_id):
-    p = Pool(nb_workers)
-    f_x = p.map(transform,x)   
-    p.close()
-    f_x = to_np_array(f_x)
-    print f_x.shape
-    return f_x
+def to_np_array(X):
+    if isinstance(X[0], np.ndarray):
+        # return np.vstack(X)
+        out = np.empty([len(X)] + list(X[0].shape), dtype=X[0].dtype)
+        for i, x in enumerate(X):
+            out[i] = x
+        return out
 
+    return np.array(X) 
