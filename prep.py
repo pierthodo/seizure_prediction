@@ -19,7 +19,7 @@ def replace_d(df,x):
         df['data'][i] = x[i]
     return df
 
-PATH = "/NOBACKUP/pthodo/kaggle/data/"
+PATH = "/rap/jim-594-aa/data/"
 data_p = 'downsample_100/'
 idx_type = 'spec/val/'
 
