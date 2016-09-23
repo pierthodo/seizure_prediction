@@ -22,7 +22,17 @@ def replace_d(df,x):
         df['data'][i] = x[i]
     return df
 
-PATH = "/rap/jim-594-aa/pthodo/kaggle/data/"
+def get_feature(x,patient_id):
+    p = Pool(nb_workers)
+    f_x = p.map(transform,x)   
+    p.close()
+    f_x = to_np_array(f_x)
+    print f_x.shape
+    return f_x
+
+
+
+PATH = "/NOBACKUP/pthodo/kaggle/data/"
 data_p = 'downsample_100/'
 idx_type = 'spec/val/'
 nb_workers = 5
