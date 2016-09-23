@@ -22,7 +22,7 @@ def replace_d(df,x):
         df['data'][i] = x[i]
     return df
 
-PATH = "/rap/jim-594-aa/data/"
+PATH = "/rap/jim-594-aa/pthodo/kaggle/data/"
 data_p = 'downsample_100/'
 idx_type = 'spec/val/'
 
