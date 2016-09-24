@@ -16,7 +16,7 @@ from keras.layers.wrappers import Bidirectional,TimeDistributed
 from keras import backend as K
 from keras.layers.normalization import BatchNormalization
 from keras.callbacks import EarlyStopping
-
+import sys
 
 def to_np_array(X):
 	if isinstance(X[0], np.ndarray):
