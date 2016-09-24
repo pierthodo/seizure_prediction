@@ -58,7 +58,7 @@ def get_model():
 	model.add(Activation('sigmoid'))
 	sgd = Adagrad(lr = 0.001)
 	model.compile(loss='binary_crossentropy',  optimizer=sgd)
-
+	return model
 
 PATH = "/NOBACKUP/pthodo/kaggle/data/"
 feature_p = 'cached_feature/spectrogram_100_basic/'
