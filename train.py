@@ -72,8 +72,8 @@ patient = int(sys.argv[1])
 print "Patient " +str(patient)
 X_train_pd = pd.read_pickle(PATH+feature_p+'X_train_'+str(patient)+'.pkl')
 X_train = to_np_array(X_train_pd['data'])[:,electrode,:,:]
-X_train = X_train.reshape((X_train_pd.shape[0],1,X_train_pd.shape[1],
-													X_train_pd.shape[2]))
+X_train = X_train.reshape((X_train.shape[0],1,X_train.shape[1],
+													X_train.shape[2]))
 y_train = np.array(X_train_pd['Class'])
 if submission:
 	X_test =pd.read_pickle(PATH+feature_p+'X_test_'+str(patient)+'.pkl')
