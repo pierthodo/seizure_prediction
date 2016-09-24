@@ -66,8 +66,8 @@ PATH_INDEX = 'Index/spec/val/'
 PATH_RESULT = '/NOBACKUP/pthodo/kaggle/result/'
 cross_patient = False
 submission = False
-electrode = 0
-patient = 1
+electrode = int(sys.argv[2])
+patient = int(sys.argv[1])
 
 print "Patient " +str(patient)
 X_train_pd = pd.read_pickle(PATH+feature_p+'X_train_'+str(patient)+'.pkl')
@@ -96,14 +96,16 @@ for cv in range(idx.shape[0]):
     y_test = y_train[test]
     
     model.fit(x_t, y_t, batch_size=32, nb_epoch=15,validation_data=(X_valid,y_valid),verbose= 1,callbacks=[early_stop])
+    
     if submission:
-    	pred = model.predict(X_test)
-    	pred_f.append(pred)
+		pred = model.predict(X_test)
+		pred_f.append(pred)
    	else:
-   		pred = model.predict(X_train[test])
-    	pred_f.append((pred,y_train[test]))
+		pred = model.predict(X_train[test])
+		pred_f.append((pred,y_train[test]))
 
-if not submission:
-    np.save(PATH_RESULT + 'cross_val/'+str(patient)+'_'+str(electrode)+'.npy',np.array(pred_f))
-else:
+if submission:
 	np.save(PATH_RESULT + 'submission/'+str(patient)+'_'+str(electrode)+'.npy',np.array(pred_f))
+
+else:
+    np.save(PATH_RESULT + 'cross_val/'+str(patient)+'_'+str(electrode)+'.npy',np.array(pred_f))
