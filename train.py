@@ -77,6 +77,7 @@ if submission:
 idx = np.load(PATH+PATH_INDEX + str(patient-1) + '_' + str(0)+'.npy')
 
 for electrode in range(16):
+	print "Electrode " + str(electrode)
 	X_train = to_np_array(X_train_pd['data'])[:,electrode,:,:]
 	X_train = X_train.reshape((X_train.shape[0],1,X_train.shape[1],
 														X_train.shape[2]))
@@ -94,7 +95,7 @@ for electrode in range(16):
 		X_test = X_train[test,:,:]
 		y_test = y_train[test]
 		
-		model.fit(x_t, y_t, batch_size=32, nb_epoch=10,validation_data=(X_valid,y_valid),verbose= 1,callbacks=[early_stop])
+		model.fit(x_t, y_t, batch_size=32, nb_epoch=10,validation_data=(X_valid,y_valid),verbose= 0,callbacks=[early_stop])
 		
 		if submission:
 			pred = model.predict(X_test)
