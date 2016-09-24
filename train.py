@@ -77,7 +77,7 @@ X_train = X_train.reshape((X_train.shape[0],1,X_train.shape[1],
 y_train = np.array(X_train_pd['Class'])
 if submission:
 	X_test =pd.read_pickle(PATH+feature_p+'X_test_'+str(patient)+'.pkl')
-idx = np.load(PATH+PATH_INDEX + str(patient-1) + '_' + str(0))
+idx = np.load(PATH+PATH_INDEX + str(patient-1) + '_' + str(0)+'.npy')
 
 
 
