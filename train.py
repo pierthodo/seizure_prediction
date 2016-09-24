@@ -65,47 +65,46 @@ feature_p = 'cached_feature/spectrogram_100_basic/'
 PATH_INDEX = 'Index/spec/val/'
 PATH_RESULT = '/NOBACKUP/pthodo/kaggle/result/'
 cross_patient = False
-submission = False
-electrode = int(sys.argv[2])
+submission = str(sys.argv[2])
 patient = int(sys.argv[1])
 
 print "Patient " +str(patient)
 X_train_pd = pd.read_pickle(PATH+feature_p+'X_train_'+str(patient)+'.pkl')
-X_train = to_np_array(X_train_pd['data'])[:,electrode,:,:]
-X_train = X_train.reshape((X_train.shape[0],1,X_train.shape[1],
-													X_train.shape[2]))
+
 y_train = np.array(X_train_pd['Class'])
 if submission:
 	X_test =pd.read_pickle(PATH+feature_p+'X_test_'+str(patient)+'.pkl')
 idx = np.load(PATH+PATH_INDEX + str(patient-1) + '_' + str(0)+'.npy')
 
+for electrode in range(16):
+	X_train = to_np_array(X_train_pd['data'])[:,electrode,:,:]
+	X_train = X_train.reshape((X_train.shape[0],1,X_train.shape[1],
+														X_train.shape[2]))
+	pred_f = []
+	for cv in range(idx.shape[0]):
+		train,valid,test = idx[cv]
+		if submission:
+			train = train+test
+		model = get_model()
+		early_stop = EarlyStopping(patience=2)
+		x_t = X_train[train,:,:]
+		y_t = y_train[train]
+		X_valid = X_train[valid,:,:]
+		y_valid = y_train[valid]
+		X_test = X_train[test,:,:]
+		y_test = y_train[test]
+		
+		model.fit(x_t, y_t, batch_size=32, nb_epoch=10,validation_data=(X_valid,y_valid),verbose= 1,callbacks=[early_stop])
+		
+		if submission:
+			pred = model.predict(X_test)
+			pred_f.append(pred)
+	   	else:
+			pred = model.predict(X_train[test])
+			pred_f.append((pred,y_train[test]))
 
-
-pred_f = []
-for cv in range(idx.shape[0]):
-	train,valid,test = idx[cv]
 	if submission:
-		train = train+test
-	model = get_model()
-	early_stop = EarlyStopping(patience=2)
-	x_t = X_train[train,:,:]
-	y_t = y_train[train]
-	X_valid = X_train[valid,:,:]
-	y_valid = y_train[valid]
-	X_test = X_train[test,:,:]
-	y_test = y_train[test]
-	
-	model.fit(x_t, y_t, batch_size=32, nb_epoch=15,validation_data=(X_valid,y_valid),verbose= 1,callbacks=[early_stop])
-	
-	if submission:
-		pred = model.predict(X_test)
-		pred_f.append(pred)
-   	else:
-		pred = model.predict(X_train[test])
-		pred_f.append((pred,y_train[test]))
+		np.save(PATH_RESULT + 'submission/'+str(patient)+'_'+str(electrode)+'.npy',np.array(pred_f))
 
-if submission:
-	np.save(PATH_RESULT + 'submission/'+str(patient)+'_'+str(electrode)+'.npy',np.array(pred_f))
-
-else:
-	np.save(PATH_RESULT + 'cross_val/'+str(patient)+'_'+str(electrode)+'.npy',np.array(pred_f))
+	else:
+		np.save(PATH_RESULT + 'cross_val/'+str(patient)+'_'+str(electrode)+'.npy',np.array(pred_f))
