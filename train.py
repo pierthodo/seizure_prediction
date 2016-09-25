@@ -92,8 +92,6 @@ for electrode in range(16):
 		y_t = y_train[train]
 		X_valid = X_train[valid,:,:]
 		y_valid = y_train[valid]
-		X_test = X_train[test,:,:]
-		y_test = y_train[test]
 		
 		model.fit(x_t, y_t, batch_size=32, nb_epoch=10,validation_data=(X_valid,y_valid),verbose= 0,callbacks=[early_stop])
 		
