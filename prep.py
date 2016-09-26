@@ -43,7 +43,7 @@ sampling_freq = int(re.search(r'\d+', data_p).group())
 parameters = {}
 parameters[feature[0]] = {'windowing':'hamming','length':200,'overlap':60}
 
-directory_feature = PATH + 'cached_feature/' + 'spectrogram_100_basic/'
+directory_feature = PATH + 'cached_feature/' + 'spectrogram_no_basic/'
 
 if not os.path.exists(directory_feature):
     os.makedirs(directory_feature)
