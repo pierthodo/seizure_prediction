@@ -71,15 +71,18 @@ y_train = np.array(X_train_pd['Class'])
 if submission:
 	X_test_pd =pd.read_pickle(PATH+feature_p+'X_test_'+str(patient)+'.pkl')
 idx = np.load(PATH+PATH_INDEX + str(patient-1) + '_' + str(0)+'.npy')
-X_train = to_np_array(X_train_pd['data'])
-X_test = to_np_array(X_test_pd['data'])
+
+X_train_f = to_np_array(X_train_pd['data'])
+X_test_f = to_np_array(X_test_pd['data'])
+del X_train_pd
+del X_test_pd
 for electrode in range(16):
 	print "Electrode " + str(electrode)
-	X_train = X_train[:,electrode,:,:]
+	X_train = X_train_f[:,electrode,:,:]
 	X_train = X_train.reshape((X_train.shape[0],1,X_train.shape[1],
 														X_train.shape[2]))
 	if submission:
-		X_test = X_test[:,electrode,:,:]
+		X_test = X_test_f[:,electrode,:,:]
 		X_test = X_test.reshape((X_test.shape[0],1,X_test.shape[1],
 															X_test.shape[2]))
 	pred_f = []
@@ -94,7 +97,7 @@ for electrode in range(16):
 		X_valid = X_train[valid,:,:]
 		y_valid = y_train[valid]
 		
-		model.fit(x_t, y_t, batch_size=32, nb_epoch=16,validation_data=(X_valid,y_valid),verbose= 1)
+		model.fit(x_t, y_t, batch_size=64, nb_epoch=16,validation_data=(X_valid,y_valid),verbose= 1)
 		
 		if submission:
 			pred = model.predict(X_test)
