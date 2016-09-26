@@ -46,14 +46,10 @@ def get_model():
 	old_shape = model.layers[-1].output_shape
 	new_shape = (old_shape[3],old_shape[1]*old_shape[2])
 	model.add(Reshape(new_shape))
-	model.add(Bidirectional(LSTM(128,return_sequences= True)))
+	model.add(Bidirectional(LSTM(128,return_sequences= True,init ='glorot_normal')))
 	model.add(BatchNormalization())
 	model.add(Lambda(function=lambda x: K.mean(x, axis=1), 
 					   output_shape=lambda shape: (shape[0],) + shape[2:]))
-
-	model.add(Dense(32))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization())
 	model.add(Dense(1))
 	model.add(Activation('sigmoid'))
 	sgd = Adagrad(lr = 0.001)
@@ -86,18 +82,18 @@ for electrode in range(16):
 		X_test = X_test.reshape((X_test.shape[0],1,X_test.shape[1],
 															X_test.shape[2]))
 	pred_f = []
-	for cv in range(idx.shape[0]):
+	for cv in range(1):
 		train,valid,test = idx[cv]
 		if submission:
 			train = train+test
 		model = get_model()
-		early_stop = EarlyStopping(patience=2)
+		#early_stop = EarlyStopping(patience=2)
 		x_t = X_train[train,:,:]
 		y_t = y_train[train]
 		X_valid = X_train[valid,:,:]
 		y_valid = y_train[valid]
 		
-		model.fit(x_t, y_t, batch_size=32, nb_epoch=10,validation_data=(X_valid,y_valid),verbose= 0,callbacks=[early_stop])
+		model.fit(x_t, y_t, batch_size=32, nb_epoch=16,validation_data=(X_valid,y_valid),verbose= 0)
 		
 		if submission:
 			pred = model.predict(X_test)
