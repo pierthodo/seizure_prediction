@@ -33,7 +33,7 @@ def get_feature(x,patient_id):
 
 
 PATH = "/NOBACKUP/pthodo/kaggle/data/"
-data_p = 'downsample_100/'
+data_p = 'data_1/'
 idx_type = 'spec/val/'
 nb_workers = 20
 
