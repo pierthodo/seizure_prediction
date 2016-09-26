@@ -45,6 +45,7 @@ def get_model():
 	model.add(BatchNormalization())
 	old_shape = model.layers[-1].output_shape
 	new_shape = (old_shape[3],old_shape[1]*old_shape[2])
+	#ADD PERMUTATION INSTEAD OF RESHAPE HERE
 	model.add(Reshape(new_shape))
 	model.add(Bidirectional(LSTM(128,return_sequences= True,init ='glorot_normal')))
 	model.add(BatchNormalization())
