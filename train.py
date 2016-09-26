@@ -93,7 +93,7 @@ for electrode in range(16):
 		X_valid = X_train[valid,:,:]
 		y_valid = y_train[valid]
 		
-		model.fit(x_t, y_t, batch_size=32, nb_epoch=16,validation_data=(X_valid,y_valid),verbose= 0)
+		model.fit(x_t, y_t, batch_size=32, nb_epoch=16,validation_data=(X_valid,y_valid),verbose= 1)
 		
 		if submission:
 			pred = model.predict(X_test)
