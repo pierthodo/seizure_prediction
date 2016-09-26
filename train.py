@@ -71,14 +71,15 @@ y_train = np.array(X_train_pd['Class'])
 if submission:
 	X_test_pd =pd.read_pickle(PATH+feature_p+'X_test_'+str(patient)+'.pkl')
 idx = np.load(PATH+PATH_INDEX + str(patient-1) + '_' + str(0)+'.npy')
-
+X_train = to_np_array(X_train_pd['data'])
+X_test = to_np_array(X_test_pd['data'])
 for electrode in range(16):
 	print "Electrode " + str(electrode)
-	X_train = to_np_array(X_train_pd['data'])[:,electrode,:,:]
+	X_train = X_train[:,electrode,:,:]
 	X_train = X_train.reshape((X_train.shape[0],1,X_train.shape[1],
 														X_train.shape[2]))
 	if submission:
-		X_test = to_np_array(X_test_pd['data'])[:,electrode,:,:]
+		X_test = X_test[:,electrode,:,:]
 		X_test = X_test.reshape((X_test.shape[0],1,X_test.shape[1],
 															X_test.shape[2]))
 	pred_f = []
