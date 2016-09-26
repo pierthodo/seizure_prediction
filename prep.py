@@ -48,6 +48,7 @@ directory_feature = PATH + 'cached_feature/' + 'spectrogram_no_basic/'
 if not os.path.exists(directory_feature):
     os.makedirs(directory_feature)
 else:
+    print directory_feature
     sys.exit("Data already prepared")
 
 if not os.path.exists(PATH + 'Index/' + idx_type):
