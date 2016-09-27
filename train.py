@@ -29,7 +29,7 @@ def td_sum(x):
 	return K.sum(x,axis=1)
 def get_model():
 	model = Sequential()
-	model.add(Convolution2D(64, 3, 5 ,subsample = (1,2) , input_shape=(1, 103, 1677) ))
+	model.add(Convolution2D(64, 3, 5 ,subsample = (1,4) , input_shape=(1, 101, 1599) ))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization())
 	model.add(MaxPooling2D(pool_size=(2, 2)))
