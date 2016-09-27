@@ -7,7 +7,7 @@ from utils import *
 from multiprocessing import Pool
 from scipy import signal
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten, Reshape, Lambda
+from keras.layers import Dense, Dropout, Activation, Flatten, Reshape, Lambda, Permute
 from keras.layers import Convolution2D, MaxPooling2D
 from keras.optimizers import SGD,Adagrad
 from keras.layers.recurrent import LSTM
@@ -29,28 +29,33 @@ def td_sum(x):
 	return K.sum(x,axis=1)
 def get_model():
 	model = Sequential()
-	model.add(Convolution2D(64, 3, 5 ,subsample = (1,2) , input_shape=(1, 101, 428) ))
+	model.add(Convolution2D(64, 3, 5 ,subsample = (1,2) , input_shape=(1, 103, 1677) ))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization())
 	model.add(MaxPooling2D(pool_size=(2, 2)))
+
 	model.add(Convolution2D(128,3, 3,subsample = (1,2)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization())
+
 	model.add(MaxPooling2D(pool_size=(2, 2)))
-	model.add(Convolution2D(256,3, 3))
+
+	model.add(Convolution2D(256,3, 3,subsample = (1,2)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization())
-	model.add(Convolution2D(512,3, 3))
+	model.add(Convolution2D(512,3, 3,subsample = (1,1)))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization())
+	model.add(Permute( (3,2,1) ) )
 	old_shape = model.layers[-1].output_shape
-	new_shape = (old_shape[3],old_shape[1]*old_shape[2])
+	new_shape = (old_shape[1],old_shape[2]*old_shape[3])
 	#ADD PERMUTATION INSTEAD OF RESHAPE HERE
+
 	model.add(Reshape(new_shape))
 	model.add(Bidirectional(LSTM(128,return_sequences= True,init ='glorot_normal')))
 	model.add(BatchNormalization())
 	model.add(Lambda(function=lambda x: K.mean(x, axis=1), 
-					   output_shape=lambda shape: (shape[0],) + shape[2:]))
+	                   output_shape=lambda shape: (shape[0],) + shape[2:]))
 	model.add(Dense(1))
 	model.add(Activation('sigmoid'))
 	sgd = Adagrad(lr = 0.001)
@@ -58,7 +63,7 @@ def get_model():
 	return model
 
 PATH = "/NOBACKUP/pthodo/kaggle/data/"
-feature_p = 'cached_feature/spectrogram_100_basic/'
+feature_p = 'cached_feature/spectrogram_no_basic/'
 PATH_INDEX = 'Index/spec/val/'
 PATH_RESULT = '/NOBACKUP/pthodo/kaggle/result/'
 cross_patient = False
