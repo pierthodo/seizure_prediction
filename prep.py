@@ -41,7 +41,7 @@ feature = ['spectrogram']
 sampling_freq = int(re.search(r'\d+', data_p).group())
 sampling_freq = 400
 parameters = {}
-parameters[feature[0]] = {'windowing':'hann','length':512,'overlap':153}
+parameters[feature[0]] = {'windowing':'hann','length':200,'overlap':50}
 
 directory_feature = PATH + 'cached_feature/' + 'spectrogram_no_basic/'
 
