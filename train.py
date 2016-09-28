@@ -49,9 +49,10 @@ def get_model():
 	model.add(Permute( (3,2,1) ) )
 	old_shape = model.layers[-1].output_shape
 	new_shape = (old_shape[1],old_shape[2]*old_shape[3])
-	
+
 	model.add(Reshape(new_shape))
 	model.add(Bidirectional(SimpleRNN(128,return_sequences= True,init ='glorot_normal')))
+	model.add(Activation('relu'))
 	model.add(BatchNormalization())
 	model.add(Lambda(function=lambda x: K.mean(x, axis=1), 
 	                   output_shape=lambda shape: (shape[0],) + shape[2:]))
