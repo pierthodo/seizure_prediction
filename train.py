@@ -10,7 +10,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten, Reshape, Lambda, Permute
 from keras.layers import Convolution2D, MaxPooling2D
 from keras.optimizers import SGD,Adagrad
-from keras.layers.recurrent import LSTM
+from keras.layers.recurrent import LSTM, SimpleRNN
 from keras.engine.topology import Merge
 from keras.layers.wrappers import Bidirectional,TimeDistributed
 from keras import backend as K
@@ -29,30 +29,29 @@ def td_sum(x):
 	return K.sum(x,axis=1)
 def get_model():
 	model = Sequential()
-	model.add(Convolution2D(64, 3, 5 ,subsample = (1,4) , input_shape=(1, 101, 1599) ))
+	model.add(Convolution2D(64, 3, 5 ,subsample = (1,4) ,init = 'normal', input_shape=(1, 101, 1599) ))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization())
 	model.add(MaxPooling2D(pool_size=(2, 2)))
 
-	model.add(Convolution2D(128,3, 3,subsample = (1,2)))
+	model.add(Convolution2D(128,3, 3,subsample = (1,2),init = 'normal'))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization())
 
 	model.add(MaxPooling2D(pool_size=(2, 2)))
 
-	model.add(Convolution2D(256,3, 3,subsample = (1,2)))
+	model.add(Convolution2D(256,3, 3,subsample = (1,2),init = 'normal'))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization())
-	model.add(Convolution2D(512,3, 3,subsample = (1,1)))
+	model.add(Convolution2D(512,3, 3,subsample = (1,1),init = 'normal'))
 	model.add(Activation('relu'))
 	model.add(BatchNormalization())
 	model.add(Permute( (3,2,1) ) )
 	old_shape = model.layers[-1].output_shape
 	new_shape = (old_shape[1],old_shape[2]*old_shape[3])
-	#ADD PERMUTATION INSTEAD OF RESHAPE HERE
-
+	
 	model.add(Reshape(new_shape))
-	model.add(Bidirectional(LSTM(128,return_sequences= True,init ='glorot_normal')))
+	model.add(Bidirectional(SimpleRNN(128,return_sequences= True,init ='glorot_normal')))
 	model.add(BatchNormalization())
 	model.add(Lambda(function=lambda x: K.mean(x, axis=1), 
 	                   output_shape=lambda shape: (shape[0],) + shape[2:]))
