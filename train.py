@@ -12,7 +12,7 @@ import time
 import argparse
 import matplotlib
 matplotlib.use('Agg')
-
+import time
 import matplotlib.pyplot as plt
 
 
