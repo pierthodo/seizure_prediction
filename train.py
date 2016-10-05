@@ -53,7 +53,7 @@ for cv in range(num_cross_val):
 	tmp_roc = 0.5
 	for epoch in range(nb_epoch):
 
-		hist = model.fit([X_train[train],id_set[train]], y_train[train], batch_size=64, nb_epoch=1,verbose= 1,validation_data=([X_train[valid],id_set[valid]],y_train[valid]),class_weight={0:1,1:10})
+		hist = model.fit(X_train[train], y_train[train], batch_size=64, nb_epoch=1,verbose= 1,validation_data=(X_train[valid],y_train[valid]),class_weight={0:1,1:10})
 		
 		pred = model.predict(X_train[valid])
 		
@@ -72,7 +72,7 @@ for cv in range(num_cross_val):
 	model = load_model(PATH_RESULT+ "model/"+str(n) + "_weights.hdf5")
 
 	if submission:
-		pred = model.predict([X_test,id_set_test])
+		pred = model.predict(X_test)
 		
 	performance_result.append(tmp)
 
