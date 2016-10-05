@@ -69,7 +69,7 @@ for cv in range(num_cross_val):
 		
 		tmp.append((roc_1,loss))	
 
-	model = load_model(PATH_RESULT+ "model/"+str(n) + "_weights.hdf5")
+	model = load_model(PATH_RESULT+ "model/"+str(n_t) + "_weights.hdf5")
 
 	if submission:
 		pred = model.predict(X_test)
