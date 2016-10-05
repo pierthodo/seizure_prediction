@@ -65,7 +65,7 @@ for cv in range(num_cross_val):
 			tmp_roc = roc_1
 			model.save(PATH_RESULT+ "model/"+str(n_t) + "_weights.hdf5")
 		
-		print "Roc score at epoch number " +str(epoch) + "  :  " +  str(roc_1)
+		print "Roc score at epoch number " +str(epoch+1)+"/"+str(nb_epoch) + "  :  " +  str(roc_1)
 		
 		tmp.append((roc_1,loss))	
 
