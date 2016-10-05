@@ -63,7 +63,7 @@ for cv in range(num_cross_val):
 		if roc_1 > tmp_roc:
 			print "Saving model"
 			tmp_roc = roc_1
-			model.save(PATH_RESULT+ "model/"+str(n) + "_weights.hdf5")
+			model.save(PATH_RESULT+ "model/"+str(n_t) + "_weights.hdf5")
 		
 		print "Roc score at epoch number " +str(epoch) + "  :  " +  str(roc_1)
 		
