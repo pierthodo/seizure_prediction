@@ -22,9 +22,10 @@ from keras.optimizers import RMSprop
 from keras.layers import TimeDistributed
 
 
-def get_model(X_train_shape):
+def get_model(shape):
+
 	model = Sequential()
-	model.add(Permute((3,2,1),input_shape=X_train_shape))
+	model.add(Permute((3,2,1),input_shape=(shape[1],shape[2],shape[3])))
 	old_shape = model.layers[-1].output_shape
 
 	model.add(Reshape((old_shape[1],1,old_shape[2],old_shape[3])))

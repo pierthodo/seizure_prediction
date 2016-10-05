@@ -48,7 +48,7 @@ for cv in range(num_cross_val):
 		train = train + idx_list[i][cv][0] + idx_list[i][cv][1]
 		valid = valid + idx_list[i][cv][2]
 		
-	model = get_model(X_train.shape)
+	model = get_model(X_train.shape[1:])
 	tmp = []
 	tmp_roc = 0.5
 	for epoch in range(nb_epoch):
