@@ -83,6 +83,8 @@ def to_np_array(X):
     return np.array(X) 
 
 def load_data(PATH,submission):
+    feature_p = 'cached_feature/spectrogram_100_basic/'
+    PATH_INDEX = 'Index/spec/val/'
     idx_list = []
     size_set = 0
     id_set = []
