@@ -1,119 +1,101 @@
+mport sys
+sys.setrecursionlimit(100000)
 import numpy as np
 import os
 import cPickle as pickle
 import pandas as pd
-from sklearn.metrics import roc_auc_score
 from utils import *
-from multiprocessing import Pool
-from scipy import signal
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten, Reshape, Lambda, Permute
-from keras.layers import Convolution2D, MaxPooling2D
-from keras.optimizers import SGD,Adagrad
-from keras.layers.recurrent import LSTM, SimpleRNN
-from keras.engine.topology import Merge
-from keras.layers.wrappers import Bidirectional,TimeDistributed
-from keras import backend as K
-from keras.layers.normalization import BatchNormalization
-from keras.callbacks import EarlyStopping
+from model import *
 import sys
+import csv 
+import time
+import argparse
+import matplotlib
+matplotlib.use('Agg')
 
-def to_np_array(X):
-	if isinstance(X[0], np.ndarray):
-		# return np.vstack(X)
-		out = np.empty([len(X)] + list(X[0].shape), dtype=X[0].dtype)
-		for i, x in enumerate(X):
-			out[i] = x
-		return out
-def td_sum(x):
-	return K.sum(x,axis=1)
-def get_model():
-	model = Sequential()
-	model.add(Convolution2D(64, 3, 5 ,subsample = (1,4) ,init = 'normal', input_shape=(1, 101, 1599) ))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization())
-	model.add(MaxPooling2D(pool_size=(2, 2)))
+import matplotlib.pyplot as plt
 
-	model.add(Convolution2D(128,3, 3,subsample = (1,2),init = 'normal'))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization())
 
-	model.add(MaxPooling2D(pool_size=(2, 2)))
 
-	model.add(Convolution2D(256,3, 3,subsample = (1,2),init = 'normal'))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization())
-	model.add(Convolution2D(512,3, 3,subsample = (1,1),init = 'normal'))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization())
-	model.add(Permute( (3,2,1) ) )
-	old_shape = model.layers[-1].output_shape
-	new_shape = (old_shape[1],old_shape[2]*old_shape[3])
+#########PARSE ARGUMENT ################
+parser = argparse.ArgumentParser()
+parser.add_argument("--submission", help="Creates a submission",action="store_true")
+args = parser.parse_args()
+if args.submission:
+	submission = True
+else:
+	submission = False
+########################################
 
-	model.add(Reshape(new_shape))
-	model.add(Bidirectional(SimpleRNN(128,return_sequences= True,init ='glorot_normal')))
-	model.add(Activation('relu'))
-	model.add(BatchNormalization())
-	model.add(Lambda(function=lambda x: K.mean(x, axis=1), 
-	                   output_shape=lambda shape: (shape[0],) + shape[2:]))
-	model.add(Dense(1))
-	model.add(Activation('sigmoid'))
-	sgd = Adagrad(lr = 0.001)
-	model.compile(loss='binary_crossentropy',  optimizer=sgd)
-	return model
-
+#########Define variable################
 PATH = "/NOBACKUP/pthodo/kaggle/data/"
-feature_p = 'cached_feature/spectrogram_no_basic/'
+feature_p = 'cached_feature/spectrogram_100_basic/'
 PATH_INDEX = 'Index/spec/val/'
 PATH_RESULT = '/NOBACKUP/pthodo/kaggle/result/'
-cross_patient = False
-submission = str(sys.argv[2])
-patient = int(sys.argv[1])
+nb_epoch = 12
+n_t = time.strftime("%H:%M:%S")
+n_d = time.strftime("%d_%m_%Y")
+num_cross_val = 4
+performance_result = []
+X_train,y_train,X_test,idx_list,id_set,id_set_test = load_data(PATH,submission)
+########################################
 
-print "Patient " +str(patient)
-X_train_pd = pd.read_pickle(PATH+feature_p+'X_train_'+str(patient)+'.pkl')
 
-y_train = np.array(X_train_pd['Class'])
+########RUN ALGO########################
+for cv in range(num_cross_val):
+	print "Cross validation " + str(cv)
+	train = []
+	valid = []
+	for i in range(3):
+		train = train + idx_list[i][cv][0] + idx_list[i][cv][1]
+		valid = valid + idx_list[i][cv][2]
+		
+	model = get_model(X_train.shape)
+	tmp = []
+	tmp_roc = 0.5
+	for epoch in range(nb_epoch):
+
+		hist = model.fit([X_train[train],id_set[train]], y_train[train], batch_size=64, nb_epoch=1,verbose= 1,validation_data=([X_train[valid],id_set[valid]],y_train[valid]),class_weight={0:1,1:10})
+		
+		pred = model.predict(X_train[valid])
+		
+		roc_1 = roc_auc_score(y_train[valid],pred)	
+		loss = hist.history['loss'][0]
+		
+		if roc_1 > tmp_roc:
+			print "Saving model"
+			tmp_roc = roc_1
+			model.save(PATH_RESULT+ "model/"+str(n) + "_weights.hdf5")
+		
+		print "Roc score at epoch number " +str(epoch) + "  :  " +  str(roc_1)
+		
+		tmp.append((roc_1,loss))	
+
+	model = load_model(PATH_RESULT+ "model/"+str(n) + "_weights.hdf5")
+
+	if submission:
+		pred = model.predict([X_test,id_set_test])
+		
+	performance_result.append(tmp)
+
+########################################
+
+##########ANALYZE RESULT################
+
+result = np.asarray(performance_result)
+path_tmp = '/home/ml/pthodo/kaggle_prediction/result/' + n_d+ '/'+n_t
+if not os.path.exists(path_tmp):
+	os.makedirs(path_tmp)
+data_m = result.mean(axis=0)   
+plt.plot(data_m[:,0],label="Roc_1")
+#plt.legend()
+plt.savefig(path_tmp + '/' + 'performance_graph_'+'_'+n_t+'.png')
+plt.close()
 if submission:
-	X_test_pd =pd.read_pickle(PATH+feature_p+'X_test_'+str(patient)+'.pkl')
-idx = np.load(PATH+PATH_INDEX + str(patient-1) + '_' + str(0)+'.npy')
-
-X_train_f = to_np_array(X_train_pd['data'])
-X_test_f = to_np_array(X_test_pd['data'])
-del X_train_pd
-del X_test_pd
-for electrode in range(16):
-	print "Electrode " + str(electrode)
-	X_train = X_train_f[:,electrode,:,:]
-	X_train = X_train.reshape((X_train.shape[0],1,X_train.shape[1],
-														X_train.shape[2]))
-	if submission:
-		X_test = X_test_f[:,electrode,:,:]
-		X_test = X_test.reshape((X_test.shape[0],1,X_test.shape[1],
-															X_test.shape[2]))
-	pred_f = []
-	for cv in range(1):
-		train,valid,test = idx[cv]
-		if submission:
-			train = train+test
-		model = get_model()
-		#early_stop = EarlyStopping(patience=2)
-		x_t = X_train[train,:,:]
-		y_t = y_train[train]
-		X_valid = X_train[valid,:,:]
-		y_valid = y_train[valid]
-		
-		model.fit(x_t, y_t, batch_size=64, nb_epoch=16,validation_data=(X_valid,y_valid),verbose= 1)
-		
-		if submission:
-			pred = model.predict(X_test)
-			pred_f.append(pred)
-	   	else:
-			pred = model.predict(X_train[test])
-			pred_f.append((pred,y_train[test]))
-
-	if submission:
-		np.save(PATH_RESULT + 'submission/'+str(patient)+'_'+str(electrode)+'.npy',np.array(pred_f))
-
-	else:
-		np.save(PATH_RESULT + 'cross_val/'+str(patient)+'_'+str(electrode)+'.npy',np.array(pred_f))
+	#np.save('./prediction.npy',pred)
+	files = np.load('./files.npy')
+	pred_tmp = []
+	for i in range(len(pred)):
+	    pred_tmp.append(pred[i][0])
+	pred = np.array(pred_tmp)
+	make_submission(pred,files)
