@@ -7,7 +7,7 @@ import os
 import sys
 import csv
 import pickle
-
+import time
 def cross_val_idx(df,cv,validation):
     h = np.array(df['Hour'])
     cl = np.array(df['Class'])
