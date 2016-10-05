@@ -29,8 +29,6 @@ else:
 
 #########Define variable################
 PATH = "/NOBACKUP/pthodo/kaggle/data/"
-feature_p = 'cached_feature/spectrogram_100_basic/'
-PATH_INDEX = 'Index/spec/val/'
 PATH_RESULT = '/NOBACKUP/pthodo/kaggle/result/'
 nb_epoch = 6
 n_t = time.strftime("%H:%M:%S")
