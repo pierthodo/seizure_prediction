@@ -25,7 +25,7 @@ from keras.layers import TimeDistributed
 def get_model(shape):
 
 	model = Sequential()
-	model.add(Permute((3,2,1),input_shape=(shape[1],shape[2],shape[3])))
+	model.add(Permute((3,2,1),input_shape=shape))
 	old_shape = model.layers[-1].output_shape
 
 	model.add(Reshape((old_shape[1],1,old_shape[2],old_shape[3])))
