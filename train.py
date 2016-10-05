@@ -30,7 +30,7 @@ else:
 #########Define variable################
 PATH = "/NOBACKUP/pthodo/kaggle/data/"
 PATH_RESULT = '/NOBACKUP/pthodo/kaggle/result/'
-nb_epoch = 10
+nb_epoch = 15
 n_t = time.strftime("%H:%M:%S")
 n_d = time.strftime("%d_%m_%Y")
 num_cross_val = 1
