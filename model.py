@@ -82,7 +82,7 @@ def get_model_id(shape):
 	x = mean_temp(x)
 
 	aux_input = Input(shape=(1,))
-	x = merge([x, aux_input], mode='concat')
+	x = merge([x, aux_input], mode='concat')(x)
 
 	x = Dense(1,activation='sigmoid')(x)
 
