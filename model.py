@@ -47,7 +47,7 @@ def get_model(shape):
 	model.add(Dense(1))
 	model.add(Activation('sigmoid'))
 	#Try rmsprop instead here 
-	sgd = Adagrad(lr = 0.001)
+	sgd = RMSprop()
 	model.compile(loss='binary_crossentropy',  optimizer=sgd)
 	return model
 
