@@ -71,8 +71,7 @@ for cv in range(num_cross_val):
 
 	#model = load_model(PATH_RESULT+ "model/"+str(n_t) + "_weights.hdf5")
 
-	if submission:
-		pred = model.predict(X_test)
+
 		
 	performance_result.append(tmp)
 
@@ -89,7 +88,17 @@ plt.plot(data_m[:,0],label="Roc_1")
 #plt.legend()
 plt.savefig(path_tmp + '/' + 'performance_graph_'+'_'+n_t+'.png')
 plt.close()
+
+##########TRAIN AND PREDICT TEST########
+
 if submission:
+
+	model = get_model(X_train[0].shape)
+	for epoch in range(nb_epoch):
+		print "Epoch number " + str(epoch) + "/" + str(nb_epoch)
+		hist = model.fit(X_train, y_train, batch_size=64, nb_epoch=1,verbose= 1,class_weight={0:1,1:10})
+	pred = model.predict(X_test)
+
 	#np.save('./prediction.npy',pred)
 	files = np.load('./files.npy')
 	pred_tmp = []
