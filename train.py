@@ -33,7 +33,7 @@ PATH_RESULT = '/NOBACKUP/pthodo/kaggle/result/'
 nb_epoch = 15
 n_t = time.strftime("%H:%M:%S")
 n_d = time.strftime("%d_%m_%Y")
-num_cross_val = 1
+num_cross_val = 4
 performance_result = []
 X_train,y_train,X_test,idx_list,id_set,id_set_test = load_data(PATH,submission)
 ########################################
