@@ -50,3 +50,44 @@ def get_model(shape):
 	sgd = Adagrad(lr = 0.001)
 	model.compile(loss='binary_crossentropy',  optimizer=sgd)
 	return model
+
+def get_model_id(shape):
+
+	spec_model = Sequential()
+	spec_model.add(LocallyConnected2D(32,5,4,subsample=(4,2),input_shape=(1,101,16)))
+	spec_model.add(TimeDistributed(Dropout(0.25)))
+
+	spec_model.add(LocallyConnected2D(64,5,4,subsample=(4,2)))
+	spec_model.add(Dropout(0.25))
+
+
+
+	video_input = Input(shape=(16,101,428))
+
+	Perm = Permute((3,2,1))
+	x = Perm(video_input)
+
+	old_shape = Perm.output_shape
+
+	x = Reshape((old_shape[1],1,old_shape[2],old_shape[3]))(x)
+
+	x_t = TimeDistributed(spec_model)
+	x = x_t(x)
+
+	rec_layer = Bidirectional(LSTM(128,return_sequences= True,init ='glorot_normal'))
+	x = rec_layer(x)
+
+	mean_temp = Lambda(function=lambda x: K.mean(x, axis=1), 
+	               output_shape=lambda shape: (shape[0],) + shape[2:])
+	x = mean_temp(x)
+
+	aux_input = Input(shape=(1,))
+	x = merge([x, aux_input], mode='concat')
+
+	x = Dense(1,activation='sigmoid')(x)
+
+	sgd = Adagrad(lr=0.001)
+	model = Model(input = [video_input,aux_input],output = [x])
+	model.compile(loss='binary_crossentropy',  optimizer=sgd)
+
+	return model
