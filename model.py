@@ -64,15 +64,15 @@ def get_model_id(shape):
 
 	x = MaxPooling3D(pool_size=(1, 4, 1))(x)
 
-	x = TimeDistributed(LocallyConnected2D(32,5,4,subsample=(2,2),activation='relu'))(x)
+	x = TimeDistributed(LocallyConnected2D(32,5,4,subsample=(2,2)))(x)
 
-	time_d_loc = TimeDistributed(LocallyConnected2D(64,5,4,subsample=(2,1),activation='relu'))
+	time_d_loc = TimeDistributed(LocallyConnected2D(64,5,4,subsample=(2,1)))
 	x = time_d_loc(x)
 	old_shape = time_d_loc.output_shape
 	print old_shape
 	x = Reshape((old_shape[1],old_shape[2]*old_shape[3]*old_shape[4]))(x)
 
-	x = Bidirectional(LSTM(128,return_sequences= True,init ='glorot_normal',activation='relu'))(x)
+	x = Bidirectional(LSTM(128,return_sequences= True,init ='glorot_normal'))(x)
 
 	x = Lambda(function=lambda x: K.mean(x, axis=1), 
 	               output_shape=lambda shape: (shape[0],) + shape[2:])(x)
