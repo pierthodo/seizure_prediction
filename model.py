@@ -32,15 +32,15 @@ def get_model(shape):
 	model.add(MaxPooling3D(pool_size=(1, 4, 1)))
 	
 	model.add(TimeDistributed(LocallyConnected2D(32,5,4,subsample=(2,2))))
-	model.add(TimeDistributed(Activation('relu')))
+	#model.add(TimeDistributed(Activation('relu')))
 	model.add(TimeDistributed(LocallyConnected2D(64,5,4,subsample=(2,1))))
-	model.add(TimeDistributed(Activation('relu')))
+	#model.add(TimeDistributed(Activation('relu')))
 	
 	old_shape = model.layers[-1].output_shape
 	model.add(Reshape((old_shape[1],old_shape[2]*old_shape[3]*old_shape[4])))
 
 	model.add(Bidirectional(LSTM(128,return_sequences= True,init ='glorot_normal')))
-	model.add(Activation('relu'))
+	#model.add(Activation('relu'))
 	model.add(Lambda(function=lambda x: K.mean(x, axis=1), 
 				   output_shape=lambda shape: (shape[0],) + shape[2:]))
 
